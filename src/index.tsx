@@ -3,6 +3,7 @@ import React from 'react';
 import { View, StatusBar } from 'react-native';
 
 import Routes from './routes';
+import { CartProvider } from './hooks/cart';
 
 const App: React.FC = () => (
   <View style={{ flex: 1 }}>
@@ -11,7 +12,9 @@ const App: React.FC = () => (
       backgroundColor="transparent"
       translucent
     />
-    <Routes />
+    <CartProvider>
+      <Routes />
+    </CartProvider>
   </View>
 );
 

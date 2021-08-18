@@ -1,28 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView } from 'react-native';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+import md5 from 'md5';
 import Logo from '../../assets/logo-header.png';
 import SearchInput from '../../components/SearchInput';
 
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
-import md5 from 'md5';
+import { useCart } from '../../hooks/cart';
 
 import {
   Container,
   Header,
   FilterContainer,
   Title,
-  ComicsContainer,
-  ComicList,
-  Comic,
-  ComicImageContainer,
-  ComicContent,
-  ComicTitle,
-  ComicDescription,
-  ComicPricing,
+  ProductsContainer,
+  ProductList,
+  ProductItem,
+  ProductImageContainer,
+  ProductContent,
+  ProductTitle,
+  ProductDescription,
+  ProductPricing,
+  PriceContainer,
+  ProductButton,
 } from './styles';
 
 interface Food {
@@ -40,23 +44,30 @@ interface Category {
   image_url: string;
 }
 
-interface Comics {
-  id: number;
+// interface Products {
+//   id: number;
+//   title: string;
+//   name: string;
+//   thumbnail: any;
+//   prices: any;
+//   resourceURI: string;
+// }
+
+interface Product {
+  id: string;
   title: string;
-  name: string;
-  thumbnail: any;
-  prices: any;
-  resourceURI: string;
+  image_url: string;
+  price: number;
 }
 
 const Dashboard: React.FC = () => {
-
-  const [comics, setComics] = useState<Comics[]>([]);
+  const { addToCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchValue, setSearchValue] = useState('');
 
   const navigation = useNavigation();
 
-  async function handleNavigate(id: number): Promise<void> {
+  async function handleNavigate(id: string): Promise<void> {
     // Navigate do ProductDetails page
     navigation.navigate('FoodDetails', { id });
   }
@@ -85,30 +96,41 @@ const Dashboard: React.FC = () => {
 
   //   loadCategories();
   // }, []);
+  function handleAddToCart(item: Product): void {
+    addToCart(item);
+  }
 
   useEffect(() => {
-    async function loadComics(): Promise<void> {
-
+    async function loadProducts(): Promise<void> {
       const timestamp = Number(new Date());
 
       const PRIVATE_KEY = 'e305fc4717aba53023feb0aa17cab6b2c15d246b';
       const PUBLIC_KEY = '22903f2fa262983ce86cb55a86b30d78';
 
-      let hash = md5(timestamp + PRIVATE_KEY + PUBLIC_KEY);
-      console.log("timestamp", timestamp);
-      console.log("PUBLIC_KEY", PUBLIC_KEY);
-      console.log("hash", hash);
+      const hash = md5(timestamp + PRIVATE_KEY + PUBLIC_KEY);
+      console.log('timestamp', timestamp);
+      console.log('PUBLIC_KEY', PUBLIC_KEY);
+      console.log('hash', hash);
 
-      const response = await fetch(`https://gateway.marvel.com/v1/public/comics?ts=${timestamp}&limit=10&apikey=${PUBLIC_KEY}&hash=${hash}`)
-      const responseJson = await response.json()
+      // const response = await fetch(
+      //  `https://gateway.marvel.com/v1/public/comics?ts=${timestamp}&limit=10&apikey=${PUBLIC_KEY}&hash=${hash}`,
+      // );
+      // const responseJson = await response.json();
 
-      //const response = await api.get(`/comics?ts=${timestamp}&apikey=${PUBLIC_KEY}&hash=${hash}`);
-      //const responseJson = await response.json();
-      console.log("result:",JSON.stringify(responseJson.data.results));
-      setComics(responseJson.data.results);
+      const responseJson = await api
+        .get(`/comics?ts=${timestamp}&apikey=${PUBLIC_KEY}&hash=${hash}`)
+        .then(response => {
+          const newProducts = response.data.data.results.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            image_url: `${item.thumbnail.path}.${item.thumbnail.extension}`,
+            price: item.prices[0].price,
+          }));
+          setProducts(newProducts);
+        });
     }
 
-    loadComics();
+    loadProducts();
   }, []);
 
   return (
@@ -130,31 +152,42 @@ const Dashboard: React.FC = () => {
         />
       </FilterContainer>
       <ScrollView>
-        <ComicsContainer>
+        <ProductsContainer>
           <Title>Quadrinhos</Title>
-          <ComicList>
-            {comics.map(comic => (
-              <Comic
-                key={comic.id}
-                onPress={() => handleNavigate(comic.id)}
+          <ProductList>
+            {products.map(product => (
+              <ProductItem
+                key={product.id}
                 activeOpacity={0.6}
-                testID={`food-${comic.id}`}
+                testID={`product-${product.id}`}
               >
-                <ComicImageContainer>
+                <ProductImageContainer>
                   <Image
-                    style={{height: 90, width: 90, borderRadius: 10}}
-                    source={{ uri: `${comic.thumbnail.path}.${comic.thumbnail.extension}` }}
+                    style={{ height: 90, width: 90, borderRadius: 10 }}
+                    source={{
+                      uri: `${product.image_url}`,
+                    }}
                   />
-                </ComicImageContainer>
-                <ComicContent>
-                  <ComicTitle>{comic.title}</ComicTitle>
-                  <ComicDescription>{comic.title}</ComicDescription>
-                  <ComicPricing>$ {comic.prices[0].price}</ComicPricing>
-                </ComicContent>
-              </Comic>
+                </ProductImageContainer>
+                <ProductContent>
+                  <ProductTitle>{product.title}</ProductTitle>
+                  <ProductDescription>{product.title}</ProductDescription>
+                  <PriceContainer>
+                    <ProductPricing>
+                      {formatValue(product.price)}
+                    </ProductPricing>
+                    <ProductButton
+                      testID={`add-to-cart-${product.id}`}
+                      onPress={() => handleAddToCart(product)}
+                    >
+                      <FeatherIcon size={20} name="plus" color="#C4C4C4" />
+                    </ProductButton>
+                  </PriceContainer>
+                </ProductContent>
+              </ProductItem>
             ))}
-          </ComicList>
-        </ComicsContainer>
+          </ProductList>
+        </ProductsContainer>
       </ScrollView>
     </Container>
   );

@@ -33,17 +33,17 @@ export const Title = styled.Text`
   padding: 0 20px;
 `;
 
-export const ComicsContainer = styled.View`
+export const ProductsContainer = styled.View`
   margin-top: 40px;
 `;
 
-export const ComicList = styled.View`
+export const ProductList = styled.View`
   flex: 1;
   padding: 0 20px;
   margin-top: 16px;
 `;
 
-export const Comic = styled.TouchableOpacity`
+export const ProductItem = styled.TouchableOpacity`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -52,7 +52,7 @@ export const Comic = styled.TouchableOpacity`
   margin-bottom: 16px;
 `;
 
-export const ComicImageContainer = styled.View`
+export const ProductImageContainer = styled.View`
   background: #ffb84d;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
@@ -60,12 +60,12 @@ export const ComicImageContainer = styled.View`
   height: 100%;
 `;
 
-export const ComicContent = styled.View`
+export const ProductContent = styled.View`
   flex: 1;
   padding: 16px;
 `;
 
-export const ComicTitle = styled.Text`
+export const ProductTitle = styled.Text`
   font-family: 'Poppins-Regular';
   font-style: normal;
   font-weight: 600;
@@ -73,7 +73,7 @@ export const ComicTitle = styled.Text`
   line-height: 22px;
   color: #3d3d4d;
 `;
-export const ComicDescription = styled.Text`
+export const ProductDescription = styled.Text`
   font-family: 'Poppins-Regular';
   font-style: normal;
   font-weight: normal;
@@ -83,7 +83,7 @@ export const ComicDescription = styled.Text`
   color: #3d3d4d;
 `;
 
-export const ComicPricing = styled.Text`
+export const ProductPricing = styled.Text`
   font-family: 'Poppins-Regular';
   font-style: normal;
   font-weight: normal;
@@ -93,3 +93,13 @@ export const ComicPricing = styled.Text`
   font-weight: 600;
   color: #39b100;
 `;
+
+export const PriceContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  margin-top: auto;
+`;
+
+export const ProductButton = styled.TouchableOpacity``;
