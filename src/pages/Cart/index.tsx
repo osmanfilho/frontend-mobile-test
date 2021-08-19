@@ -134,7 +134,10 @@ const Cart: React.FC = () => {
         <ProductsContainer>
           <ProductList>
             {products.map(product => (
-              <ProductItem activeOpacity={0.6}>
+              <ProductItem
+                activeOpacity={0.6}
+                key={`ProductItem-${product.id}`}
+              >
                 <ProductImageContainer>
                   <Image
                     style={{ width: 68, height: 68, borderRadius: 10 }}
@@ -154,12 +157,14 @@ const Cart: React.FC = () => {
 
                     <ActionContainer>
                       <ActionButton
+                        key={`increment-${product.id}`}
                         testID={`increment-${product.id}`}
                         onPress={() => handleIncrement(product.id)}
                       >
                         <FeatherIcon name="plus" color="#E83F5B" size={16} />
                       </ActionButton>
                       <ActionButton
+                        key={`decrement-${product.id}`}
                         testID={`decrement-${product.id}`}
                         onPress={() => handleDecrement(product.id)}
                       >

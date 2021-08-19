@@ -20,6 +20,7 @@ interface CartContext {
   increment(id: string): void;
   decrement(id: string): void;
   clearCart(): void;
+  totalItensInCart: number;
 }
 
 const CartContext = createContext<CartContext | null>(null);
@@ -30,8 +31,6 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
   useEffect(() => {
     async function loadProducts(): Promise<void> {
       const productsStorage = await AsyncStorage.getItem('@PhComics:items');
-
-      console.log(`CARREGANDO ${productsStorage}`);
 
       if (productsStorage) {
         setProducts(JSON.parse(productsStorage));
@@ -63,19 +62,13 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
         product => product.id === id,
       );
 
-      console.log('decrementIndex', decrementIndex);
-
       if (newProducts[decrementIndex].quantity > 1) {
-        console.log('splice 1');
         newProducts[decrementIndex].quantity -= 1;
       } else {
-        console.log('splice 2');
         newProducts.splice(decrementIndex, 1);
       }
 
       setProducts(newProducts);
-
-      console.log('decrement', JSON.stringify(newProducts));
 
       await AsyncStorage.setItem(
         '@PhComics:items',
@@ -93,18 +86,19 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
         item => item.id === checkProduct.id,
       );
 
-      if (checkIfExists > 0) {
+      if (checkIfExists >= 0) {
         await increment(checkProduct.id);
         return;
       }
 
-      const { id, title, image_url, price } = product;
+      const { id, title, image_url, price, description } = product;
 
       const productQuantified = {
         id,
         title,
         image_url,
         price,
+        description,
         quantity: 1,
         discount: 10,
       };
