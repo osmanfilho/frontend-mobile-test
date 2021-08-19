@@ -1,8 +1,5 @@
 import styled, { css } from 'styled-components/native';
-
-interface CategoryItemProps {
-  isSelected?: boolean;
-}
+import { FlatList } from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
@@ -37,9 +34,10 @@ export const ProductsContainer = styled.View`
   margin-top: 40px;
 `;
 
-export const ProductList = styled.View`
+export const ProductList = styled(FlatList)`
   flex: 1;
   padding: 0 20px;
+
   margin-top: 16px;
 `;
 
@@ -89,7 +87,6 @@ export const ProductPricing = styled.Text`
   font-weight: normal;
   font-size: 18px;
   line-height: 21px;
-  margin-top: 8px;
   font-weight: 600;
   color: #39b100;
 `;
@@ -102,4 +99,10 @@ export const PriceContainer = styled.View`
   margin-top: auto;
 `;
 
-export const ProductButton = styled.TouchableOpacity``;
+export const ProductButton = styled.TouchableOpacity`
+  background: #ffb84d;
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+`;

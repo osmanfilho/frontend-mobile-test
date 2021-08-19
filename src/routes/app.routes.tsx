@@ -4,10 +4,12 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import { View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import TabRoutes from './tab.routes';
+import Dashboard from '../pages/Dashboard';
+// import TabRoutes from './tab.routes';
 
 import Home from '../pages/Home';
-import FoodDetails from '../pages/FoodDetails';
+import ProductDetails from '../pages/ProductDetails';
+import Cart from '../pages/Cart';
 
 const App = createStackNavigator();
 
@@ -23,16 +25,16 @@ const AppRoutes: React.FC = () => (
         component={Home}
       />
       <App.Screen
-        name="MainBottom"
-        component={TabRoutes}
+        name="Dashboard"
+        component={Dashboard}
         options={{
           headerShown: false,
           gestureEnabled: false,
         }}
       />
       <App.Screen
-        name="FoodDetails"
-        component={FoodDetails}
+        name="ProductDetails"
+        component={ProductDetails}
         options={({ navigation }) => ({
           headerLeft: () => (
             <Icon
@@ -45,11 +47,42 @@ const AppRoutes: React.FC = () => (
           headerLeftContainerStyle: {
             marginLeft: 24,
           },
-          headerRight: () => <Icon name="heart" size={24} color="#FFB84D" />,
           headerRightContainerStyle: {
             marginRight: 24,
           },
-          headerTitle: 'Prato - Massas',
+          headerTitle: 'Produto - Detalhe',
+          headerTitleStyle: {
+            color: '#fff',
+            fontFamily: 'Poppins-Regular',
+            fontSize: 16,
+          },
+          headerStyle: {
+            backgroundColor: '#C72828',
+            elevation: 0,
+            borderWidth: 0,
+            shadowColor: 'transparent',
+          },
+        })}
+      />
+      <App.Screen
+        name="Cart"
+        component={Cart}
+        options={({ navigation }) => ({
+          headerLeft: () => (
+            <Icon
+              name="arrow-left"
+              size={24}
+              color="#FFB84D"
+              onPress={() => navigation.goBack()}
+            />
+          ),
+          headerLeftContainerStyle: {
+            marginLeft: 24,
+          },
+          headerRightContainerStyle: {
+            marginRight: 24,
+          },
+          headerTitle: 'Carrinho',
           headerTitleStyle: {
             color: '#fff',
             fontFamily: 'Poppins-Regular',

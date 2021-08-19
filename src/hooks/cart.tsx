@@ -8,17 +8,10 @@ import React, {
 } from 'react';
 
 import AsyncStorage from '@react-native-community/async-storage';
+import Product from '../models/Product';
 
 interface CartProviderProps {
   children: ReactNode; // Tipagem para um elemento filho
-}
-
-export interface Product {
-  id: string;
-  title: string;
-  image_url: string;
-  price: number;
-  quantity: number;
 }
 
 interface CartContext {
@@ -26,18 +19,19 @@ interface CartContext {
   addToCart(item: Omit<Product, 'quantity'>): void;
   increment(id: string): void;
   decrement(id: string): void;
+  clearCart(): void;
 }
 
 const CartContext = createContext<CartContext | null>(null);
 
-function CartProvider({ children }: CartProviderProps) {
+function CartProvider({ children }: CartProviderProps): JSX.Element {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
       const productsStorage = await AsyncStorage.getItem('@PhComics:items');
 
-      console.log(`${productsStorage}`);
+      console.log(`CARREGANDO ${productsStorage}`);
 
       if (productsStorage) {
         setProducts(JSON.parse(productsStorage));
@@ -69,15 +63,24 @@ function CartProvider({ children }: CartProviderProps) {
         product => product.id === id,
       );
 
-      if (newProducts[decrementIndex].quantity > 1)
+      console.log('decrementIndex', decrementIndex);
+
+      if (newProducts[decrementIndex].quantity > 1) {
+        console.log('splice 1');
         newProducts[decrementIndex].quantity -= 1;
-      else {
+      } else {
+        console.log('splice 2');
         newProducts.splice(decrementIndex, 1);
       }
 
       setProducts(newProducts);
 
-      await AsyncStorage.setItem('@PhComics:items', JSON.stringify(products));
+      console.log('decrement', JSON.stringify(newProducts));
+
+      await AsyncStorage.setItem(
+        '@PhComics:items',
+        JSON.stringify(newProducts),
+      );
     },
     [products],
   );
@@ -103,6 +106,7 @@ function CartProvider({ children }: CartProviderProps) {
         image_url,
         price,
         quantity: 1,
+        discount: 10,
       };
 
       setProducts([...products, productQuantified]);
@@ -112,8 +116,27 @@ function CartProvider({ children }: CartProviderProps) {
     [products, increment],
   );
 
+  const clearCart = useCallback(async () => {
+    setProducts([]);
+
+    await AsyncStorage.setItem('@PhComics:items', '');
+  }, []);
+
+  const totalItensInCart = React.useMemo(() => {
+    const quantitySum = products.reduce((a, b) => a + b.quantity, 0);
+
+    return quantitySum;
+  }, [products]);
+
   const value = React.useMemo(
-    () => ({ addToCart, increment, decrement, products }),
+    () => ({
+      addToCart,
+      increment,
+      decrement,
+      products,
+      clearCart,
+      totalItensInCart,
+    }),
     [products, addToCart, increment, decrement],
   );
 

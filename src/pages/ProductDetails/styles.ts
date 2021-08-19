@@ -22,11 +22,11 @@ export const ScrollContainer = styled.ScrollView.attrs({
   margin-top: -40px;
 `;
 
-export const FoodsContainer = styled.View`
+export const ProductsContainer = styled.View`
   padding: 0 24px;
 `;
 
-export const Food = styled.View`
+export const ProductItem = styled.View`
   display: flex;
   flex-direction: column;
   background: #f0f0f5;
@@ -34,18 +34,18 @@ export const Food = styled.View`
   margin-bottom: 16px;
 `;
 
-export const FoodImageContainer = styled.View`
+export const ProductImageContainer = styled.View`
   background: #ffb84d;
   overflow: hidden;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
 `;
 
-export const FoodContent = styled.View`
+export const ProductContent = styled.View`
   padding: 24px;
 `;
 
-export const FoodTitle = styled.Text`
+export const ProductTitle = styled.Text`
   font-family: 'Poppins-Regular';
   font-weight: 600;
   font-size: 20px;
@@ -53,25 +53,33 @@ export const FoodTitle = styled.Text`
   color: #3d3d4d;
 `;
 
-export const FoodDescription = styled.Text`
+export const ProductDescription = styled.Text`
   font-family: 'Poppins-Regular';
   font-style: normal;
   font-weight: normal;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 25px;
   margin-top: 8px;
   color: #3d3d4d;
 `;
 
-export const FoodPricing = styled.Text`
+export const PricingContainer = styled.View`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  margin-top: 10px;
+`;
+
+export const ProductPricing = styled.Text`
   font-family: 'Poppins-Regular';
   font-style: normal;
   font-weight: normal;
-  font-size: 24px;
-  line-height: 28px;
-  color: #6c6c80;
-  margin-top: 8px;
+  font-size: 20px;
+  line-height: 21px;
   font-weight: 600;
+  color: #39b100;
 `;
 
 export const Title = styled.Text`
@@ -167,6 +175,38 @@ export const ButtonText = styled.Text`
 
 export const IconContainer = styled.View`
   background-color: #41c900;
+  padding: 16px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+`;
+
+export const AddButtonContainer = styled.View`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+export const AddButton = styled.TouchableOpacity`
+  background: #ffb84d;
+  border-radius: 8px;
+  flex-direction: row;
+  align-items: center;
+  width: 220px;
+`;
+
+export const AddButtonText = styled.Text`
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #7a1818;
+  flex: 1;
+  text-align: center;
+`;
+
+export const AddButtonIconContainer = styled.View`
+  background-color: #ffc46b;
   padding: 16px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
