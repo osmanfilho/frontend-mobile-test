@@ -20,6 +20,7 @@ interface CartContext {
   increment(id: string): void;
   decrement(id: string): void;
   clearCart(): void;
+  applyCupom(cupom: string): void;
   totalItensInCart: number;
 }
 
@@ -27,6 +28,7 @@ const CartContext = createContext<CartContext | null>(null);
 
 function CartProvider({ children }: CartProviderProps): JSX.Element {
   const [products, setProducts] = useState<Product[]>([]);
+  const [cumpo, setCupom] = useState('');
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
@@ -49,7 +51,10 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
       newProducts[incrementIndex].quantity += 1;
       setProducts(newProducts);
 
-      await AsyncStorage.setItem('@PhComics:items', JSON.stringify(products));
+      await AsyncStorage.setItem(
+        '@PhComics:items',
+        JSON.stringify(newProducts),
+      );
     },
     [products],
   );
@@ -91,7 +96,7 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
         return;
       }
 
-      const { id, title, image_url, price, description } = product;
+      const { id, title, image_url, price, description, rare } = product;
 
       const productQuantified = {
         id,
@@ -100,21 +105,51 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
         price,
         description,
         quantity: 1,
-        discount: 10,
+        discount: 0,
+        rare,
       };
 
-      setProducts([...products, productQuantified]);
+      const newProducts = [...products, productQuantified];
+      setProducts(newProducts);
 
-      await AsyncStorage.setItem('@PhComics:items', JSON.stringify(products));
+      await AsyncStorage.setItem(
+        '@PhComics:items',
+        JSON.stringify(newProducts),
+      );
     },
     [products, increment],
   );
 
   const clearCart = useCallback(async () => {
+    setCupom('');
+
     setProducts([]);
 
     await AsyncStorage.setItem('@PhComics:items', '');
   }, []);
+
+  const applyCupom = useCallback(
+    async cupom => {
+      const newProducts = [...products];
+
+      newProducts.forEach((item: Product) => {
+        item.discount = 0;
+        if (cupom.toUpperCase() === 'RARO') {
+          item.discount = 25;
+        }
+        if (cupom.toUpperCase() === 'COMUM' && !item.rare) {
+          item.discount = 10;
+        }
+      });
+      setProducts(newProducts);
+
+      await AsyncStorage.setItem(
+        '@PhComics:items',
+        JSON.stringify(newProducts),
+      );
+    },
+    [products],
+  );
 
   const totalItensInCart = React.useMemo(() => {
     const quantitySum = products.reduce((a, b) => a + b.quantity, 0);
@@ -130,6 +165,7 @@ function CartProvider({ children }: CartProviderProps): JSX.Element {
       products,
       clearCart,
       totalItensInCart,
+      applyCupom,
     }),
     [products, addToCart, increment, decrement],
   );

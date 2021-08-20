@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components/native';
 import { FlatList } from 'react-native';
 
+interface ProductImagemContainerProps {
+  isRare: boolean;
+}
+
 export const Container = styled.View`
   flex: 1;
   background: #fff;
@@ -50,12 +54,17 @@ export const ProductItem = styled.TouchableOpacity`
   margin-bottom: 16px;
 `;
 
-export const ProductImageContainer = styled.View`
+export const ProductImageContainer = styled.View<ProductImagemContainerProps>`
   background: #ffb84d;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   padding: 16px;
   height: 100%;
+  ${props =>
+    props.isRare &&
+    css`
+      background: #c72828;
+    `}
 `;
 
 export const ProductContent = styled.View`
@@ -97,6 +106,13 @@ export const PriceContainer = styled.View`
   align-items: center;
   padding-top: 10px;
   margin-top: auto;
+`;
+
+export const RareContainer = styled.View`
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
 `;
 
 export const ProductButton = styled.TouchableOpacity`

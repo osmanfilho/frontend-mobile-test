@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import md5 from 'md5';
+import { PUBLIC_KEY, PRIVATE_KEY } from '@env';
 import Logo from '../../assets/logo-header.png';
 import SearchInput from '../../components/SearchInput';
 
@@ -19,8 +20,6 @@ import {
   Container,
   Header,
   FilterContainer,
-  Title,
-  ProductsContainer,
   ProductList,
   ProductItem,
   ProductImageContainer,
@@ -31,6 +30,7 @@ import {
   PriceContainer,
   ProductButton,
   Loading,
+  RareContainer,
 } from './styles';
 
 const Dashboard: React.FC = () => {
@@ -59,13 +59,10 @@ const Dashboard: React.FC = () => {
 
     const timestamp = Number(new Date());
 
-    const PRIVATE_KEY = 'e305fc4717aba53023feb0aa17cab6b2c15d246b';
-    const PUBLIC_KEY = '22903f2fa262983ce86cb55a86b30d78';
-
     const hash = md5(timestamp + PRIVATE_KEY + PUBLIC_KEY);
 
-    const limit = 10;
-    const offset = pageNumber === 1 ? 0 : limit * (pageNumber - 1);
+    const limit = 20;
+    const offset = pageNumber === 1 ? 0 : limit * pageNumber;
 
     const responseJson = await api
       .get(
@@ -84,11 +81,14 @@ const Dashboard: React.FC = () => {
           newProduct.title = item.title;
           newProduct.description = item.description;
           newProduct.image_url = `${item.thumbnail.path}.${item.thumbnail.extension}`;
+
+          // Seta um valor padrão para as revista que não tem preço
           if (item.prices[0].price === 0) {
             newProduct.price = 1.99;
           } else {
             newProduct.price = item.prices[0].price;
           }
+          newProduct.rare = false;
 
           // Corrigir Bug da API da MARVEL
           const found = products.find(element => element.id === newProduct.id);
@@ -98,6 +98,13 @@ const Dashboard: React.FC = () => {
         });
 
         setTotal(Math.floor(totalItems / limit));
+
+        const productRare =
+          newProducts[Math.floor(Math.random() * newProducts.length)];
+
+        if (productRare) {
+          productRare.rare = true;
+        }
 
         setProducts(
           shouldRefresh ? newProducts : [...products, ...newProducts],
@@ -109,12 +116,11 @@ const Dashboard: React.FC = () => {
   }
 
   async function refreshList(): Promise<void> {
-    loadPage();
-    // setRefreshing(true);
+    setRefreshing(true);
 
-    // await loadPage(1, true);
+    await loadPage(1, true);
 
-    // setRefreshing(false);
+    setRefreshing(false);
   }
 
   useEffect(() => {
@@ -130,7 +136,7 @@ const Dashboard: React.FC = () => {
     navigation.navigate('ProductDetails', { product });
   }
 
-  function handleAddToCart(item: Product): void {
+  async function handleAddToCart(item: Product): Promise<void> {
     addToCart(item);
   }
 
@@ -182,17 +188,23 @@ const Dashboard: React.FC = () => {
             onPress={() => handleNavigate(item)}
             testID={`product-${item.id}`}
           >
-            <ProductImageContainer>
+            <ProductImageContainer isRare={item.rare}>
               <Image
                 style={{ height: 90, width: 90, borderRadius: 10 }}
                 source={{
                   uri: `${item.image_url}`,
                 }}
               />
+              {item.rare && (
+                <RareContainer>
+                  <Icon name="star" size={36} color="#FFB84D" />
+                </RareContainer>
+              )}
             </ProductImageContainer>
             <ProductContent>
               <ProductTitle>{item.title}</ProductTitle>
               <ProductDescription>{item.id}</ProductDescription>
+              <ProductDescription>{item.rare}</ProductDescription>
               <PriceContainer>
                 <ProductPricing>{formatValue(item.price)}</ProductPricing>
                 <ProductButton

@@ -1,4 +1,8 @@
-import styled from 'styled-components/native';
+import styled, { css } from 'styled-components/native';
+
+interface ProductImagemContainerProps {
+  isRare: boolean;
+}
 
 export const Container = styled.View`
   flex: 1;
@@ -45,12 +49,17 @@ export const ProductItem = styled.TouchableOpacity`
   margin-bottom: 16px;
 `;
 
-export const ProductImageContainer = styled.View`
+export const ProductImageContainer = styled.View<ProductImagemContainerProps>`
   background: #ffb84d;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   padding: 8px;
   height: 100%;
+  ${props =>
+    props.isRare &&
+    css`
+      background: #c72828;
+    `}
 `;
 
 export const ProductContent = styled.View`
@@ -276,8 +285,9 @@ export const EmptyCartContainer = styled.View`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 20px;
+  margin-left: 20px;
 `;
 
 export const AddButton = styled.TouchableOpacity`
@@ -285,7 +295,7 @@ export const AddButton = styled.TouchableOpacity`
   border-radius: 8px;
   flex-direction: row;
   align-items: center;
-  width: 220px;
+  width: 240px;
 `;
 
 export const AddButtonText = styled.Text`
@@ -302,4 +312,52 @@ export const AddButtonIconContainer = styled.View`
   padding: 16px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
+`;
+
+export const CupomInput = styled.TextInput`
+  flex: 1;
+  color: #6c6c80;
+  font-size: 16px;
+  font-family: 'Poppins-Regular';
+`;
+
+export const CupomContainerRow = styled.View`
+  background: #fff;
+  border-radius: 8px;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  border: solid 1px;
+`;
+export const CupomContainer = styled.View`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+`;
+export const RareContainer = styled.View`
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 5px;
+`;
+export const CumpomContainerIcon = styled.TouchableOpacity`
+  background-color: #ffc46b;
+  padding: 16px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  flex-direction: row;
+  width: 110px;
+`;
+
+export const CupomText = styled.Text`
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #7a1818;
+  flex: 1;
+  text-align: center;
 `;

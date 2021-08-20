@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { Image, ScrollView } from 'react-native';
+import { Image, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Icon from 'react-native-vector-icons/Feather';
@@ -44,6 +44,12 @@ import {
   AddButtonText,
   AddButtonIconContainer,
   TitleEmptyCart,
+  CupomInput,
+  CupomContainer,
+  CupomContainerRow,
+  CupomText,
+  CumpomContainerIcon,
+  RareContainer,
 } from './styles';
 
 import { useCart } from '../../hooks/cart';
@@ -54,8 +60,9 @@ const Cart: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { increment, decrement, products, clearCart } = useCart();
+  const { increment, decrement, products, clearCart, applyCupom } = useCart();
   const [showModal, setShowModal] = useState(false);
+  const [cupomValue, setCupomValue] = useState('');
 
   function handleIncrement(id: string): void {
     increment(id);
@@ -93,12 +100,6 @@ const Cart: React.FC = () => {
     return formatValue(cartTotalSum);
   }, [products]);
 
-  const totalItensInCart = useMemo(() => {
-    const quantitySum = products.reduce((a, b) => a + b.quantity, 0);
-
-    return quantitySum;
-  }, [products]);
-
   async function handleFinishOrder(): Promise<void> {
     // Finish the order and save on the API
     clearCart();
@@ -113,6 +114,20 @@ const Cart: React.FC = () => {
 
   async function handleNavigate(): Promise<void> {
     navigation.navigate('Dashboard');
+  }
+
+  async function handleCupom(): Promise<void> {
+    if (
+      cupomValue.toUpperCase() === 'RARO' ||
+      cupomValue.toUpperCase() === 'COMUM'
+    ) {
+      applyCupom(cupomValue);
+    } else {
+      Alert.alert('Aviso', 'Cupom inválido', [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    }
+    setCupomValue('');
   }
 
   return (
@@ -132,17 +147,32 @@ const Cart: React.FC = () => {
       {showModal && <Modal />}
       <ScrollView>
         <ProductsContainer>
+          {products.length > 0 && (
+            <EmptyCartContainer>
+              <AddButton onPress={() => handleNavigate()}>
+                <AddButtonText>Adicionar outros itens</AddButtonText>
+                <AddButtonIconContainer>
+                  <Icon name="shopping-cart" size={24} color="#7A1818" />
+                </AddButtonIconContainer>
+              </AddButton>
+            </EmptyCartContainer>
+          )}
           <ProductList>
             {products.map(product => (
               <ProductItem
                 activeOpacity={0.6}
                 key={`ProductItem-${product.id}`}
               >
-                <ProductImageContainer>
+                <ProductImageContainer isRare={product.rare}>
                   <Image
                     style={{ width: 68, height: 68, borderRadius: 10 }}
                     source={{ uri: product.image_url }}
                   />
+                  {product.rare && (
+                    <RareContainer>
+                      <Icon name="star" size={36} color="#FFB84D" />
+                    </RareContainer>
+                  )}
                 </ProductImageContainer>
                 <ProductContent>
                   <ProductTitle>{product.title}</ProductTitle>
@@ -178,14 +208,19 @@ const Cart: React.FC = () => {
           </ProductList>
           {products.length > 0 && (
             <>
-              <EmptyCartContainer>
-                <AddButton onPress={() => handleNavigate()}>
-                  <AddButtonText>Adicionar outros itens</AddButtonText>
-                  <AddButtonIconContainer>
-                    <Icon name="shopping-cart" size={24} color="#7A1818" />
-                  </AddButtonIconContainer>
-                </AddButton>
-              </EmptyCartContainer>
+              <CupomContainer>
+                <CupomContainerRow>
+                  <CupomInput
+                    value={cupomValue}
+                    onChangeText={setCupomValue}
+                    placeholder="Informe seu cupom"
+                  />
+                  <CumpomContainerIcon onPress={() => handleCupom()}>
+                    <Icon name="tag" size={24} color="#7A1818" />
+                    <CupomText>Aplicar</CupomText>
+                  </CumpomContainerIcon>
+                </CupomContainerRow>
+              </CupomContainer>
 
               <TotalContainer>
                 <Title>Resumo de Valores</Title>
